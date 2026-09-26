@@ -1,20 +1,16 @@
 #include <Arduino.h>
-#include <Adafruit_SSD1306.h>
+#include "Display.h"
 
 const int LED_PIN = 8;
 const int BUTTON_PIN = 7;
-Adafruit_SSD1306 display(128, 32, &Wire, -1);
+Display display;
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     Serial.begin(115200);
     randomSeed(analogRead(0));
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0, 0);
+    display.begin();    
 }
 
 void loop() {
@@ -23,9 +19,7 @@ void loop() {
     }
     delay(50);
     
-    display.setCursor(0, 16);
-    display.println("Press to start");
-    display.display();
+    display.showText("Press to play", 0, 16);
 
 
     while (digitalRead(BUTTON_PIN) == HIGH) {
@@ -35,31 +29,28 @@ void loop() {
     while (digitalRead(BUTTON_PIN) == LOW) {
      // Wait for button release
     }
-    
+    delay(50);
+
     unsigned long randomNumber = random(1000, 5000);
     unsigned long waitStart = millis();
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("Get ready...");
-    display.display();
+    display.clear();
+    display.showText("Wait for it...", 0, 0);
 
     while (millis() - waitStart < randomNumber) {
         if (digitalRead(BUTTON_PIN) == LOW){
-            display.clearDisplay();
-            display.setCursor(0, 0);
-            display.println("Too soon!");
-            display.display();
+            display.clear();
+            display.showText("Too soon!", 0, 0);
             return;
         }
     }
-    
-    digitalWrite(LED_PIN, HIGH);
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("GO!");
-    display.display();
-
     unsigned long time = millis();
+    digitalWrite(LED_PIN, HIGH);
+    display.clear();
+    display.showText("GO!", 0, 0);
+    
+    
+
+    
 
     while (digitalRead(BUTTON_PIN) == HIGH) {
 
@@ -68,10 +59,5 @@ void loop() {
     unsigned long reactionTime = millis() - time;
 
     digitalWrite(LED_PIN, LOW);
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.print("Reaction Time: ");
-    display.print(reactionTime);
-    display.println(" ms");
-    display.display();
+    display.showResult(reactionTime);
 }
