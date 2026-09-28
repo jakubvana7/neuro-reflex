@@ -22,4 +22,11 @@ void Display::clear() {
     oled.display();
 }
 
-void Display::showResult
+void Display::showResult(unsigned long ms){
+    oled.clearDisplay();
+    oled.setCursor(0, 0);
+    oled.print("Reaction time: ");
+    oled.print(ms);
+    oled.println(" ms");
+    oled.display();
+}
