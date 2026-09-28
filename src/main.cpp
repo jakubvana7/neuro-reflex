@@ -12,13 +12,15 @@ void setup() {
         Serial.println("OLED not found!");
         while (true) {}
     }
+
     pinMode(LED_PIN, OUTPUT);
     Serial.begin(115200);
     randomSeed(analogRead(0));
     display.begin();    
+    button.begin();
 }
 
-void loop() {
+ void loop() {
     button.waitForRelease();
 
     display.showText("Press to play", 0, 16);
